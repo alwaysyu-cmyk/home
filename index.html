@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>헌옷 리사이클링 - 생활용품 만들기</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Prettified Korean font (Pretendard / Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans KR"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f2fbf5',
+              100: '#e1f6e9',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 부드러운 배경 그라데이션 및 애니메이션 효과 */
+    .hero-glow {
+      background: radial-gradient(circle at 50% 35%, rgba(52, 211, 153, 0.22) 0%, rgba(243, 244, 246, 0) 70%);
+    }
+    .modal-enter {
+      animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.92) translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    @media print {
+      body { background: white !important; }
+      header, footer, #heroSection, #controlPanel, .no-print { display: none !important; }
+      #appMain { display: block !important; padding: 0 !important; }
+      #printableArea { display: block !important; border: none !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans min-h-screen flex flex-col justify-between selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- 상단 미니 네비게이션 / 뱃지 -->
+  <header class="w-full pt-6 pb-2 px-6 flex justify-between items-center max-w-4xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs sm:text-sm font-medium shadow-xs">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      친환경 제로웨이스트 업사이클링 공방
+    </div>
+    <div id="safetyBadge" class="hidden sm:inline-flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-medium">
+      <span>⚠️ 가위·바늘 안전수칙 준수</span>
+    </div>
+  </header>
+
+  <!-- 메인 히어로 섹션 (첫 화면) -->
+  <section id="heroSection" class="w-full max-w-md mx-auto px-6 py-10 flex flex-col items-center justify-center text-center hero-glow">
+    <!-- 비주얼 그래픽 아이콘 -->
+    <div class="w-20 h-20 mb-5 sm:w-24 sm:h-24 rounded-3xl bg-white shadow-xl shadow-emerald-500/10 border border-emerald-100 flex items-center justify-center text-emerald-600 transition-transform hover:scale-105 duration-300">
+      <svg class="w-10 h-10 sm:w-12 sm:h-12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m0 0l-3-3m3 3H3.75a6.75 6.75 0 000 13.5h16.5a6.75 6.75 0 000-13.5h-1.5" />
+      </svg>
+    </div>
+
+    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900 leading-snug mb-3">
+      헌옷으로 만드는<br>
+      <span class="text-emerald-600">나만의 생활용품 도안실</span>
+    </h1>
+
+    <p class="text-sm sm:text-base text-stone-600 font-normal leading-relaxed mb-7 max-w-xs">
+      쿠션, 인형, 가방까지! 원하는 크기를 정하면 <strong>2cm 시접선이 포함된 도안</strong>과 순서도를 생성해 드려요.
+    </p>
+
+    <div class="w-full max-w-xs">
+      <button 
+        id="startBtn"
+        type="button" 
+        class="w-full py-4 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-base shadow-lg shadow-emerald-600/25 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-4 focus:ring-emerald-500/20">
+        <span>도안 및 가이드 만들기</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- 워크스페이스 섹션 (도안 생성기 + 순서도 + 안전수칙) -->
+  <main id="appMain" class="hidden w-full max-w-4xl mx-auto px-4 sm:px-6 pb-16 flex-1 flex flex-col gap-6">
+
+    <!-- 상단 도구 선택 및 크기 설정 패널 -->
+    <section id="controlPanel" class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-stone-200">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-5">
+        <div>
+          <h2 class="text-lg sm:text-xl font-bold text-stone-900 flex items-center gap-2">
+            <span>✂️ 어떤 생활용품을 만드시겠어요?</span>
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-500 mt-1">원하는 품목을 선택하거나 치수(cm)를 조절하세요. <strong>외곽에 2cm 시접선</strong>이 자동 적용됩니다.</p>
+        </div>
+        <div class="flex items-center gap-2 no-print self-end sm:self-auto">
+          <button 
+            id="printBtn" 
+            type="button" 
+            class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl flex items-center gap-1.5 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24-1.076-.671-2.433-1.076-3.829H18.35c-.405 1.396-.836 2.753-1.076 3.829M6.75 6.75h10.5M6 18h12a2 2 0 002-2v-5a2 2 0 00-2-2H6a2 2 0 00-2 2v5a2 2 0 002 2z" /></svg>
+            도안 인쇄하기
+          </button>
+        </div>
+      </div>
+
+      <!-- 아이템 탭 선택 버튼들 -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-5 text-sm font-semibold">
+        <button type="button" data-item="cushion" class="item-tab-btn active-tab p-3 rounded-2xl border flex flex-col items-center justify-center gap-1.5 transition-all text-center">
+          <span class="text-xl">🛋️</span>
+          <span>푹신 쿠션</span>
+        </button>
+        <button type="button" data-item="doll" class="item-tab-btn p-3 rounded-2xl border border-stone-200 hover:bg-stone-50 flex flex-col items-center justify-center gap-1.5 transition-all text-center">
+          <span class="text-xl">🧸</span>
+          <span>애착 인형</span>
+        </button>
+        <button type="button" data-item="bag" class="item-tab-btn p-3 rounded-2xl border border-stone-200 hover:bg-stone-50 flex flex-col items-center justify-center gap-1.5 transition-all text-center">
+          <span class="text-xl">👜</span>
+          <span>텀블러 에코백</span>
+        </button>
+        <button type="button" data-item="pouch" class="item-tab-btn p-3 rounded-2xl border border-stone-200 hover:bg-stone-50 flex flex-col items-center justify-center gap-1.5 transition-all text-center">
+          <span class="text-xl">👛</span>
+          <span>스트링 파우치</span>
+        </button>
+        <button type="button" data-item="coaster" class="item-tab-btn p-3 rounded-2xl border border-stone-200 hover:bg-stone-50 flex flex-col items-center justify-center gap-1.5 transition-all text-center">
+          <span class="text-xl">☕</span>
+          <span>티코스터/방석</span>
+        </button>
+      </div>
+
+      <!-- 크기 슬라이더 컨트롤 -->
+      <div class="mt-6 pt-5 border-t border-stone-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
+          <div class="flex justify-between items-center mb-1.5">
+            <label id="widthLabel" for="itemWidth" class="text-xs sm:text-sm font-bold text-stone-700">완성 가로 너비 (cm)</label>
+            <span id="widthValue" class="text-xs sm:text-sm font-extrabold text-emerald-600 bg-white px-2 py-0.5 rounded-md border border-stone-200">35 cm</span>
+          </div>
+          <input id="itemWidth" type="range" min="10" max="60" value="35" step="1" class="w-full accent-emerald-600 cursor-pointer">
+          <p class="text-[11px] text-stone-400 mt-1">시접 2cm를 양쪽에 더하면 재단 너비는 <span id="cutWidthValue" class="font-bold text-stone-600">39 cm</span>가 됩니다.</p>
+        </div>
+
+        <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200/80">
+          <div class="flex justify-between items-center mb-1.5">
+            <label id="heightLabel" for="itemHeight" class="text-xs sm:text-sm font-bold text-stone-700">완성 세로 높이 (cm)</label>
+            <span id="heightValue" class="text-xs sm:text-sm font-extrabold text-emerald-600 bg-white px-2 py-0.5 rounded-md border border-stone-200">35 cm</span>
+          </div>
+          <input id="itemHeight" type="range" min="10" max="60" value="35" step="1" class="w-full accent-emerald-600 cursor-pointer">
+          <p class="text-[11px] text-stone-400 mt-1">시접 2cm를 위아래에 더하면 재단 높이는 <span id="cutHeightValue" class="font-bold text-stone-600">39 cm</span>가 됩니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 인쇄 및 주요 결과 구역 -->
+    <div id="printableArea" class="flex flex-col gap-6">
+      
+      <!-- 도안 뷰어 카드 -->
+      <section class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-stone-200">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="patternBadge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-lg">정사각 쿠션 도안</span>
+              <span class="bg-rose-50 text-rose-700 border border-rose-200 text-xs font-bold px-2 py-0.5 rounded-md">시접 +2.0cm 자동 적용</span>
+            </div>
+            <h3 id="patternTitle" class="text-lg font-bold text-stone-900 mt-1.5">재단선 및 완성선 가이드 도안</h3>
+          </div>
+          <!-- 도면 범례 -->
+          <div class="flex items-center gap-4 text-xs font-medium bg-stone-50 px-3 py-2 rounded-xl border border-stone-200">
+            <div class="flex items-center gap-1.5">
+              <span class="w-4 h-0.5 border-t-2 border-dashed border-rose-500 inline-block"></span>
+              <span class="text-stone-600 font-bold text-rose-600">바깥 자르는 선 (재단선)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-4 h-0.5 bg-emerald-600 inline-block"></span>
+              <span class="text-stone-600 font-bold text-emerald-700">안쪽 바느질선 (완성선)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 실시간 SVG 캔버스 도안 영역 -->
+        <div class="w-full bg-stone-50 rounded-2xl border border-dashed border-stone-300 p-4 flex flex-col items-center justify-center min-h-[320px] overflow-hidden relative">
+          <div id="svgContainer" class="w-full flex justify-center items-center">
+            <!-- 자바스크립트로 SVG 렌더링 -->
+          </div>
+          <div class="mt-3 text-center text-xs text-stone-500">
+            * 헌옷 위에 초크나 연필로 <strong>바깥 빨간 점선(가위질선)</strong>을 따라 먼저 자르고, <strong>안쪽 녹색 실선</strong>을 따라 바느질하세요.
+          </div>
+        </div>
+      </section>
+
+      <!-- 단계별 제작 순서 안내 (학생 맞춤 설명) -->
+      <section class="bg-white rounded-3xl p-5 sm:p-7 shadow-sm border border-stone-200">
+        <h3 class="text-lg font-bold text-stone-900 mb-4 flex items-center gap-2">
+          <span>🧵 단계별 제작 순서 (Step-by-step)</span>
+        </h3>
+
+        <div id="stepsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- 스크립트에서 아이템별로 동적 교체됨 -->
+        </div>
+      </section>
+
+      <!-- 안전 주의사항 (학생 필수 안내) -->
+      <section class="bg-amber-50/70 border-2 border-amber-200/80 rounded-3xl p-5 sm:p-6 text-stone-800">
+        <div class="flex items-start gap-3">
+          <div class="p-2.5 bg-amber-500 text-white rounded-2xl shadow-sm shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <div class="w-full">
+            <h4 class="text-base font-extrabold text-amber-900 mb-2">학생 실습 시 꼭 지켜야 할 [가위 & 바느질 안전 규칙]</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-amber-950 font-medium">
+              <div class="bg-white/80 p-3 rounded-xl border border-amber-200/60">
+                <p class="font-bold text-amber-900 mb-1">✂️ 재단 가위 안전</p>
+                <ul class="list-disc list-inside space-y-1 text-stone-700">
+                  <li>가위를 들고 걷거나 친구에게 칼날 방향으로 건네지 마세요 (손잡이를 향해 건네기).</li>
+                  <li>원단을 자를 때는 항상 책상 바닥에 원단을 밀착시키고 천천히 오려냅니다.</li>
+                  <li>사용하지 않는 가위는 항상 날을 닫아 책상 안쪽에 둡니다.</li>
+                </ul>
+              </div>
+              <div class="bg-white/80 p-3 rounded-xl border border-amber-200/60">
+                <p class="font-bold text-amber-900 mb-1">🪡 바늘 & 시침핀 안전</p>
+                <ul class="list-disc list-inside space-y-1 text-stone-700">
+                  <li>바늘이나 시침핀을 절대 입에 물지 마세요.</li>
+                  <li>잠깐 멈출 때도 바늘을 옷이나 바닥에 두지 말고 <strong>반드시 핀쿠션(바늘꽂이)</strong>에 꽂아둡니다.</li>
+                  <li>골무를 사용하면 두꺼운 옷감(청바지 등)을 꿰맬 때 손끝 찔림을 예방할 수 있습니다.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- 하단 푸터 카피라이트 -->
+  <footer class="w-full py-6 text-center text-xs text-stone-400 border-t border-stone-200/60 bg-stone-50">
+    © 헌옷 업사이클링 프로젝트. 학생 메이커스 교육을 위해 제작되었습니다.
+  </footer>
+
+  <!-- 인라인 자바스크립트 -->
+  <script>
+    // 아이템별 기본 데이터 정의
+    const itemPresets = {
+      cushion: {
+        name: "푹신 쿠션",
+        badge: "정사각 쿠션 도안",
+        shape: "rect",
+        defaultWidth: 35,
+        defaultHeight: 35,
+        minSize: 15,
+        maxSize: 60,
+        widthLabel: "완성 가로 너비 (cm)",
+        heightLabel: "완성 세로 높이 (cm)",
+        materials: "안 입는 티셔츠/니트 1벌, 방울솜(또는 잘게 자른 헌옷 자투리), 실, 바늘",
+        steps: [
+          {
+            title: "1단계: 헌옷 손질 및 원단 펴기",
+            desc: "구김이 심한 티셔츠는 다림질로 펴주고, 단추나 지퍼 등 단단한 부속품을 피해 평평한 몸판 부위를 넓게 펼칩니다."
+          },
+          {
+            title: "2단계: 2cm 시접 도안 그리고 2장 재단",
+            desc: "빨간 점선(시접 2cm 포함 크기)을 따라 앞판 1장, 뒤판 1장 총 2장을 가위로 바닥에 붙여 깔끔하게 자릅니다."
+          },
+          {
+            title: "3단계: 겉면끼리 맞대고 핀 고정",
+            desc: "천의 겉면(무늬가 보이는 쪽)끼리 서로 마주보게 포갠 뒤, 시침핀으로 모서리를 단단히 고정합니다."
+          },
+          {
+            title: "4단계: 안쪽 선 박음질 & 창구멍 6~8cm 남기기",
+            desc: "녹색 실선을 따라 튼튼하게 박음질합니다. 이때 솜을 넣을 수 있도록 한쪽 면 중앙에 7cm 정도는 꿰매지 않고 비워둡니다(창구멍)."
+          },
+          {
+            title: "5단계: 뒤집고 솜 채우기",
+            desc: "창구멍을 통해 모서리부터 조심스럽게 뒤집어 겉면이 나오게 한 뒤, 솜이나 부드러운 헌옷 조각을 모서리부터 통통하게 채워 넣습니다."
+          },
+          {
+            title: "6단계: 공구르기로 창구멍 막기",
+            desc: "창구멍의 시접 2cm를 안쪽으로 깔끔히 접어 넣고, 겉에서 실이 보이지 않도록 공구르기(숨은 바느질)로 마무리합니다."
+          }
+        ]
+      },
+      doll: {
+        name: "애착 인형 (테디베어/토끼)",
+        badge: "귀여운 입체 인형 도안",
+        shape: "doll",
+        defaultWidth: 20,
+        defaultHeight: 28,
+        minSize: 15,
+        maxSize: 45,
+        widthLabel: "인형 몸체 너비 (cm)",
+        heightLabel: "인형 키/높이 (cm)",
+        materials: "수면양말 또는 포근한 맨투맨/스웨터, 자수실(눈/코 표현용), 솜, 가위",
+        steps: [
+          {
+            title: "1단계: 신축성 고려하여 원단 배치",
+            desc: "늘어남이 있는 양말이나 스웨터의 경우, 늘어나는 결 방향을 고려해 좌우 대칭이 되도록 펼칩니다."
+          },
+          {
+            title: "2단계: 인형 귀·얼굴 윤곽선 그리기",
+            desc: "초크로 인형 형태를 그리고 바깥으로 2cm 시접 여유를 주어 가위로 앞뒤 2장을 똑같이 재단합니다."
+          },
+          {
+            title: "3단계: 얼굴 표정 자수 놓기",
+            desc: "바느질을 합치기 전, 앞판 원단에 검정 자수실로 눈과 코를 먼저 단단히 프렌치 너트 스티치나 러닝 스티치로 수놓습니다."
+          },
+          {
+            title: "4단계: 창구멍 남기고 둘레 박음질",
+            desc: "겉면끼리 맞댄 후 옆구리나 엉덩이 아래에 5cm 창구멍을 남기고 외곽 실선을 따라 세밀하게 홈질 또는 튼튼한 박음질을 합니다."
+          },
+          {
+            title: "5단계: 둥근 곡선 시접 가위집 주기",
+            desc: "귀나 팔의 둥근 모서리 시접 부분에 바느질 선이 잘리지 않게 1cm 간격으로 살짝 가위집을 내면 뒤집었을 때 훨씬 예쁘게 펴집니다."
+          },
+          {
+            title: "6단계: 솜 채우기 및 창구멍 공구르기",
+            desc: "귀 끝과 손발 구석부터 솜을 차곡차곡 밀어 넣고 통통해지면 창구멍을 공구르기로 감쪽같이 꿰매어 완성합니다."
+          }
+        ]
+      },
+      bag: {
+        name: "텀블러 에코백",
+        badge: "데일리 에코백 & 텀블러백 도안",
+        shape: "bag",
+        defaultWidth: 22,
+        defaultHeight: 30,
+        minSize: 15,
+        maxSize: 50,
+        widthLabel: "가방 너비 (cm)",
+        heightLabel: "가방 깊이 (cm)",
+        materials: "청바지(데님) 또는 옥스포드 셔츠, 손잡이용 웨빙끈 또는 바지 밑단 천",
+        steps: [
+          {
+            title: "1단계: 튼튼한 원단 부위 고르기",
+            desc: "무게를 견뎌야 하므로 청바지 다리통이나 셔츠의 질긴 부분을 활용합니다."
+          },
+          {
+            title: "2단계: 몸판 2장 & 손잡이 끈 2줄 재단",
+            desc: "몸판(시접 2cm 포함) 2장과 너비 8cm, 길이 35cm 손잡이 끈 원단 2장을 각각 재단합니다."
+          },
+          {
+            title: "3단계: 손잡이 끈 접어 박기",
+            desc: "손잡이 원단을 반으로 접고 양끝 시접을 안으로 접어 다린 뒤, 양끝을 길게 박음질하여 튼튼한 끈을 2개 만듭니다."
+          },
+          {
+            title: "4단계: 입구 손잡이 임시 고정 및 옆선 박기",
+            desc: "가방 입구에 손잡이를 아래 방향으로 시침핀 고정한 뒤, 겉면끼리 맞대어 양옆과 밑단을 2cm 시접선에 맞춰 박음질합니다."
+          },
+          {
+            title: "5단계: 바닥 입체 각 만들기 (선택)",
+            desc: "바닥 양쪽 모서리를 삼각뿔 모양으로 벌려 4cm 폭으로 가로 박음질하면 물병이 쏙 들어가는 입체 바닥이 완성됩니다."
+          },
+          {
+            title: "6단계: 입구 두 번 접어 상침하기",
+            desc: "가방 입구 시접을 안쪽으로 2cm씩 두 번 단단히 접어 넣은 후 빙 둘러 튼튼하게 박음질하여 완성합니다."
+          }
+        ]
+      },
+      pouch: {
+        name: "스트링 파우치",
+        badge: "조임끈 스트링 파우치 도안",
+        shape: "pouch",
+        defaultWidth: 18,
+        defaultHeight: 22,
+        minSize: 12,
+        maxSize: 45,
+        widthLabel: "파우치 가로 너비 (cm)",
+        heightLabel: "파우치 세로 길이 (cm)",
+        materials: "패턴 남방/체크 셔츠, 신발끈 또는 후드 티 조임끈 2줄, 옷핀",
+        steps: [
+          {
+            title: "1단계: 셔츠 패턴 무늬 맞춰 재단",
+            desc: "예쁜 체크나 패턴이 중앙에 오도록 2cm 시접이 포함된 크기로 앞/뒤 원단 2장을 자릅니다."
+          },
+          {
+            title: "2단계: 끈 통로(터널) 표시하기",
+            desc: "상단에서 3cm 내려온 곳에 끈이 지나갈 통로 2.5cm 폭을 초크로 미리 표시해 둡니다."
+          },
+          {
+            title: "3단계: 양옆선과 밑바닥 박음질",
+            desc: "겉면을 마주 대고 끈 구멍이 될 위치(상단 3~5.5cm 구간)는 비워두고 나머지 옆선과 밑바닥을 박음질합니다."
+          },
+          {
+            title: "4단계: 상단 터널 접어 박기",
+            desc: "파우치 입구 시접을 안으로 접어 다린 뒤, 끈이 들어갈 수 있도록 원형으로 빙 둘러 박음질합니다."
+          },
+          {
+            title: "5단계: 겉면으로 뒤집기",
+            desc: "모서리 각을 젓가락 등으로 살살 밀어내며 겉면으로 깔끔히 뒤집어 다림질합니다."
+          },
+          {
+            title: "6단계: 옷핀으로 끈 2줄 양방향 통과",
+            desc: "후드끈 끝에 옷핀을 꽂아 왼쪽에서 한 바퀴, 오른쪽에서 한 바퀴 교차 통과시킨 후 매듭을 묶어 조임 파우치를 완성합니다."
+          }
+        ]
+      },
+      coaster: {
+        name: "티코스터 / 방석",
+        badge: "패브릭 컵받침 & 미니 방석",
+        shape: "rect",
+        defaultWidth: 12,
+        defaultHeight: 12,
+        minSize: 8,
+        maxSize: 50,
+        widthLabel: "코스터 가로 너비 (cm)",
+        heightLabel: "코스터 세로 높이 (cm)",
+        materials: "청바지 자투리, 안 입는 면 티셔츠, 자투리 펠트나 접착솜(선택)",
+        steps: [
+          {
+            title: "1단계: 흡수성 좋은 면 원단 고르기",
+            desc: "찬 음료의 물방울을 잘 흡수할 수 있도록 면 100% 티셔츠나 두툼한 캔버스 천을 준비합니다."
+          },
+          {
+            title: "2단계: 2cm 시접 포함 정사각형 재단",
+            desc: "앞판 1장, 뒤판 1장, 그리고 도톰함을 원할 경우 안감용 원단(또는 펠트) 1장 총 2~3장을 잰 뒤 자릅니다."
+          },
+          {
+            title: "3단계: 겉면끼리 포개고 시침핀 고정",
+            desc: "원단의 겉과 겉을 마주 대고, 안감 솜이 있다면 바깥쪽에 덧대어 핀으로 단단히 고정합니다."
+          },
+          {
+            title: "4단계: 창구멍 3~4cm 남기고 테두리 박음질",
+            desc: "녹색 완성선을 따라 네 변을 네모나게 꿰매되, 뒤집을 작은 창구멍 3cm는 남겨둡니다."
+          },
+          {
+            title: "5단계: 네 모서리 사선으로 자르기",
+            desc: "모서리 시접을 바느질선 닿지 않게 대각선으로 잘라내면 뒤집었을 때 모서리가 뭉치지 않고 빳빳하고 예쁘게 살아납니다."
+          },
+          {
+            title: "6단계: 뒤집은 뒤 가장자리 상침 마감",
+            desc: "뒤집어서 창구멍을 접어 넣은 후, 가장자리에서 0.3cm 안쪽을 빙 둘러 한 번 더 겉박음질(상침)하면 창구멍도 막히고 형태가 견고해집니다."
+          }
+        ]
+      }
+    };
+
+    let currentItemKey = 'cushion';
+
+    // DOM 요소
+    const heroSection = document.getElementById('heroSection');
+    const appMain = document.getElementById('appMain');
+    const startBtn = document.getElementById('startBtn');
+    const itemTabs = document.querySelectorAll('.item-tab-btn');
+    const itemWidthInput = document.getElementById('itemWidth');
+    const itemHeightInput = document.getElementById('itemHeight');
+    const widthLabel = document.getElementById('widthLabel');
+    const heightLabel = document.getElementById('heightLabel');
+    const widthValue = document.getElementById('widthValue');
+    const heightValue = document.getElementById('heightValue');
+    const cutWidthValue = document.getElementById('cutWidthValue');
+    const cutHeightValue = document.getElementById('cutHeightValue');
+    const svgContainer = document.getElementById('svgContainer');
+    const patternBadge = document.getElementById('patternBadge');
+    const stepsContainer = document.getElementById('stepsContainer');
+    const printBtn = document.getElementById('printBtn');
+
+    // 시작 버튼 클릭 시 뷰 전환
+    startBtn.addEventListener('click', () => {
+      heroSection.classList.add('hidden');
+      appMain.classList.remove('hidden');
+      loadItem(currentItemKey);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // 탭 버튼 클릭
+    itemTabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        itemTabs.forEach(b => {
+          b.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-600', 'shadow-md');
+          b.classList.add('border-stone-200', 'text-stone-700', 'hover:bg-stone-50');
+        });
+        btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600', 'shadow-md');
+        btn.classList.remove('border-stone-200', 'text-stone-700', 'hover:bg-stone-50');
+
+        currentItemKey = btn.getAttribute('data-item');
+        loadItem(currentItemKey);
+      });
+    });
+
+    // 치수 슬라이더 변경 감지
+    itemWidthInput.addEventListener('input', updatePattern);
+    itemHeightInput.addEventListener('input', updatePattern);
+
+    // 프린트 버튼
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+
+    // 아이템 로드 함수
+    function loadItem(key) {
+      const item = itemPresets[key];
+      patternBadge.innerText = item.badge;
+      widthLabel.innerText = item.widthLabel;
+      heightLabel.innerText = item.heightLabel;
+
+      itemWidthInput.min = item.minSize;
+      itemWidthInput.max = item.maxSize;
+      itemWidthInput.value = item.defaultWidth;
+
+      itemHeightInput.min = item.minSize;
+      itemHeightInput.max = item.maxSize;
+      itemHeightInput.value = item.defaultHeight;
+
+      renderSteps(item.steps, item.materials);
+      updatePattern();
+    }
+
+    // 단계별 가이드 렌더링
+    function renderSteps(steps, materials) {
+      let html = `
+        <div class="col-span-1 md:col-span-2 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 mb-1">
+          <p class="text-xs sm:text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+            <span>🎁 준비물:</span>
+            <span class="font-normal text-stone-700">${materials}</span>
+          </p>
+        </div>
+      `;
+
+      steps.forEach((step, idx) => {
+        html += `
+          <div class="p-4 rounded-2xl border border-stone-100 bg-stone-50/60 hover:bg-stone-50 transition-colors flex gap-3.5">
+            <div class="w-7 h-7 rounded-xl bg-emerald-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+              ${idx + 1}
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-stone-900 mb-1">${step.title}</h5>
+              <p class="text-xs text-stone-600 leading-relaxed">${step.desc}</p>
+            </div>
+          </div>
+        `;
+      });
+
+      stepsContainer.innerHTML = html;
+    }
+
+    // SVG 도안 실시간 계산 및 렌더링
+    function updatePattern() {
+      const w = parseFloat(itemWidthInput.value);
+      const h = parseFloat(itemHeightInput.value);
+      const seam = 2.0; // 시접 2cm 고정
+
+      const cutW = (w + seam * 2).toFixed(1);
+      const cutH = (h + seam * 2).toFixed(1);
+
+      widthValue.innerText = `${w} cm`;
+      heightValue.innerText = `${h} cm`;
+      cutWidthValue.innerText = `${cutW} cm`;
+      cutHeightValue.innerText = `${cutH} cm`;
+
+      const item = itemPresets[currentItemKey];
+      renderSvgPattern(w, h, seam, item.shape);
+    }
+
+    // 도형별 SVG 생성
+    function renderSvgPattern(w, h, seam, shapeType) {
+      // 뷰포트 크기 및 스케일링 설정
+      const svgW = 460;
+      const svgH = 340;
+      const maxDrawW = 340;
+      const maxDrawH = 240;
+
+      const totalW = w + seam * 2;
+      const totalH = h + seam * 2;
+
+      const scale = Math.min(maxDrawW / totalW, maxDrawH / totalH);
+
+      const renderCutW = totalW * scale;
+      const renderCutH = totalH * scale;
+      const renderInnerW = w * scale;
+      const renderInnerH = h * scale;
+      const renderSeam = seam * scale;
+
+      const cx = svgW / 2;
+      const cy = svgH / 2;
+
+      let shapesHtml = '';
+
+      if (shapeType === 'doll') {
+        // 인형 모양 (외곽 곡선 + 귀 + 안쪽 선)
+        shapesHtml = `
+          <!-- 시접 2cm 외곽 자르는 선 (빨간 점선) -->
+          <g transform="translate(${cx}, ${cy})">
+            <!-- 곰돌이 귀 외곽 (시접선) -->
+            <circle cx="${-renderInnerW * 0.38}" cy="${-renderInnerH * 0.45}" r="${renderInnerW * 0.22 + renderSeam}" fill="#ffe4e6" stroke="#f43f5e" stroke-width="2" stroke-dasharray="6 4" />
+            <circle cx="${renderInnerW * 0.38}" cy="${-renderInnerH * 0.45}" r="${renderInnerW * 0.22 + renderSeam}" fill="#ffe4e6" stroke="#f43f5e" stroke-width="2" stroke-dasharray="6 4" />
+            
+            <!-- 몸통 외곽 (시접선) -->
+            <rect x="${-renderCutW / 2}" y="${-renderCutH / 2}" width="${renderCutW}" height="${renderCutH}" rx="${renderCutW * 0.35}" fill="#fff1f2" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="6 4" />
+
+            <!-- 안쪽 바느질 완성선 (초록 실선) -->
+            <circle cx="${-renderInnerW * 0.38}" cy="${-renderInnerH * 0.45}" r="${renderInnerW * 0.22}" fill="none" stroke="#059669" stroke-width="2.5" />
+            <circle cx="${renderInnerW * 0.38}" cy="${-renderInnerH * 0.45}" r="${renderInnerW * 0.22}" fill="none" stroke="#059669" stroke-width="2.5" />
+            <rect x="${-renderInnerW / 2}" y="${-renderInnerH / 2}" width="${renderInnerW}" height="${renderInnerH}" rx="${renderInnerW * 0.32}" fill="rgba(255,255,255,0.7)" stroke="#059669" stroke-width="2.5" />
+
+            <!-- 인형 귀여운 이목구비 데모 가이드 -->
+            <circle cx="${-renderInnerW * 0.15}" cy="${-renderInnerH * 0.08}" r="4" fill="#52525b" />
+            <circle cx="${renderInnerW * 0.15}" cy="${-renderInnerH * 0.08}" r="4" fill="#52525b" />
+            <ellipse cx="0" cy="${renderInnerH * 0.02}" rx="7" ry="5" fill="#e4e4e7" stroke="#71717a" stroke-width="1.5" />
+            <polygon points="-4,${renderInnerH * 0.01} 4,${renderInnerH * 0.01} 0,${renderInnerH * 0.04}" fill="#e11d48" />
+
+            <!-- 창구멍 표시 -->
+            <rect x="${renderInnerW / 2 - 2}" y="${renderInnerH * 0.05}" width="6" height="${renderInnerH * 0.35}" fill="#f59e0b" rx="2" />
+            <text x="${renderInnerW / 2 + 10}" y="${renderInnerH * 0.22}" font-size="10" font-weight="bold" fill="#b45309">창구멍 (바느질 제외)</text>
+          </g>
+        `;
+      } else if (shapeType === 'bag') {
+        // 가방 형태 (상단 손잡이 가이드 포함)
+        shapesHtml = `
+          <g transform="translate(${cx}, ${cy})">
+            <!-- 손잡이 끈 가이드라인 -->
+            <path d="M ${-renderInnerW * 0.3} ${-renderCutH / 2} C ${-renderInnerW * 0.3} ${-renderCutH / 2 - 45}, ${renderInnerW * 0.3} ${-renderCutH / 2 - 45}, ${renderInnerW * 0.3} ${-renderCutH / 2}" fill="none" stroke="#94a3b8" stroke-width="6" stroke-linecap="round" stroke-dasharray="4 4" />
+            <text x="0" y="${-renderCutH / 2 - 26}" text-anchor="middle" font-size="11" font-weight="bold" fill="#64748b">손잡이 부착 위치</text>
+
+            <!-- 외곽 시접 2cm 자르는 선 (빨간 점선) -->
+            <rect x="${-renderCutW / 2}" y="${-renderCutH / 2}" width="${renderCutW}" height="${renderCutH}" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="6 4" />
+            
+            <!-- 안쪽 완성선 (초록 실선) -->
+            <rect x="${-renderInnerW / 2}" y="${-renderInnerH / 2}" width="${renderInnerW}" height="${renderInnerH}" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="2.5" />
+
+            <!-- 상단 접는 선 안내선 -->
+            <line x1="${-renderInnerW / 2}" y1="${-renderInnerH / 2}" x2="${renderInnerW / 2}" y2="${-renderInnerH / 2}" stroke="#0284c7" stroke-width="2" stroke-dasharray="3 3" />
+            <text x="0" y="${-renderInnerH / 2 + 15}" text-anchor="middle" font-size="10" font-weight="bold" fill="#0369a1">가방 입구 두 번 접는 선</text>
+          </g>
+        `;
+      } else if (shapeType === 'pouch') {
+        // 스트링 파우치 (끈 통로선 포함)
+        shapesHtml = `
+          <g transform="translate(${cx}, ${cy})">
+            <!-- 외곽 시접 2cm 재단선 -->
+            <rect x="${-renderCutW / 2}" y="${-renderCutH / 2}" width="${renderCutW}" height="${renderCutH}" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="6 4" />
+            <!-- 안쪽 완성선 -->
+            <rect x="${-renderInnerW / 2}" y="${-renderInnerH / 2}" width="${renderInnerW}" height="${renderInnerH}" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="2.5" />
+
+            <!-- 스트링 터널 통로 표시 -->
+            <rect x="${-renderInnerW / 2}" y="${-renderInnerH / 2 + 15}" width="${renderInnerW}" height="20" fill="rgba(245, 158, 11, 0.15)" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4 2" />
+            <text x="0" y="${-renderInnerH / 2 + 29}" text-anchor="middle" font-size="10" font-weight="bold" fill="#b45309">끈 통과 통로 (터널 구간)</text>
+          </g>
+        `;
+      } else {
+        // 기본 사각형 (쿠션, 티코스터 등)
+        shapesHtml = `
+          <g transform="translate(${cx}, ${cy})">
+            <!-- 바깥 시접 2cm 자르는 선 (빨간 점선) -->
+            <rect x="${-renderCutW / 2}" y="${-renderCutH / 2}" width="${renderCutW}" height="${renderCutH}" rx="8" fill="#fff1f2" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="6 4" />
+            <!-- 안쪽 바느질 완성선 (초록 실선) -->
+            <rect x="${-renderInnerW / 2}" y="${-renderInnerH / 2}" width="${renderInnerW}" height="${renderInnerH}" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="2.5" />
+
+            <!-- 창구멍 표시 (쿠션용) -->
+            <rect x="${renderInnerW / 2 - 2}" y="${-renderInnerH * 0.2}" width="6" height="${renderInnerH * 0.4}" fill="#f59e0b" rx="2" />
+            <text x="${renderInnerW / 2 + 8}" y="4" font-size="10" font-weight="bold" fill="#b45309">창구멍 (7cm)</text>
+          </g>
+        `;
+      }
+
+      // 치수 라벨 및 화살표 추가
+      const dimHtml = `
+        <!-- 가로 시접 치수 표시 -->
+        <g transform="translate(${cx}, ${cy + renderCutH / 2 + 24})">
+          <line x1="${-renderCutW / 2}" y1="0" x2="${renderCutW / 2}" y2="0" stroke="#71717a" stroke-width="1.5" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+          <line x1="${-renderCutW / 2}" y1="-6" x2="${-renderCutW / 2}" y2="6" stroke="#71717a" stroke-width="1.5" />
+          <line x1="${renderCutW / 2}" y1="-6" x2="${renderCutW / 2}" y2="6" stroke="#71717a" stroke-width="1.5" />
+          <text x="0" y="16" text-anchor="middle" font-size="12" font-weight="bold" fill="#18181b">전체 재단 가로: ${(w + seam * 2).toFixed(1)} cm (완성 ${w}cm + 시접 4cm)</text>
+        </g>
+
+        <!-- 세로 시접 치수 표시 -->
+        <g transform="translate(${cx - renderCutW / 2 - 24}, ${cy})">
+          <line x1="0" y1="${-renderCutH / 2}" x2="0" y2="${renderCutH / 2}" stroke="#71717a" stroke-width="1.5" />
+          <line x1="-6" y1="${-renderCutH / 2}" x2="6" y2="${-renderCutH / 2}" stroke="#71717a" stroke-width="1.5" />
+          <line x1="-6" y1="${renderCutH / 2}" x2="6" y2="${renderCutH / 2}" stroke="#71717a" stroke-width="1.5" />
+          <text x="-12" y="4" text-anchor="end" font-size="12" font-weight="bold" fill="#18181b">${(h + seam * 2).toFixed(1)} cm</text>
+        </g>
+
+        <!-- 2cm 시접 폭 표시 콜아웃 -->
+        <g transform="translate(${cx - renderCutW / 2 + renderSeam / 2}, ${cy - renderCutH / 2 - 12})">
+          <rect x="-24" y="-14" width="48" height="18" rx="4" fill="#f43f5e" />
+          <text x="0" y="-1" text-anchor="middle" font-size="10" font-weight="bold" fill="#ffffff">시접 2cm</text>
+          <path d="M 0 4 L 0 10" stroke="#f43f5e" stroke-width="1.5" />
+        </g>
+      `;
+
+      svgContainer.innerHTML = `
+        <svg viewBox="0 0 ${svgW} ${svgH}" class="w-full max-w-[480px] h-auto drop-shadow-sm select-none">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#71717a"/>
+            </marker>
+          </defs>
+          ${shapesHtml}
+          ${dimHtml}
+        </svg>
+      `;
+    }
+
+    // 초기 탭 스타일 설정
+    const initialActive = document.querySelector('[data-item="cushion"]');
+    if (initialActive) {
+      initialActive.classList.add('bg-emerald-600', 'text-white', 'border-emerald-600', 'shadow-md');
+      initialActive.classList.remove('border-stone-200', 'text-stone-700');
+    }
+  </script>
+</body>
+</html>
